@@ -1,0 +1,41 @@
+===============================================
+BẢN TRÌNH BÀY KIẾN TRÚC HỆ THỐNG (30 GIÂY)
+===============================================
+
+"Hệ thống là một ứng dụng bán hàng trực tuyến sử dụng kiến trúc Microservices."
+
+---------------------------------------------------
+1. GIẢI QUYẾT VẤN ĐỀ:
+---------------------------------------------------
+Quản lý người dùng, sản phẩm và đơn hàng một cách độc lập, dễ mở rộng và bảo trì.
+
+---------------------------------------------------
+2. 4 DỊCH VỤ CHÍNH:
+---------------------------------------------------
+• API Gateway - cổng vào duy nhất, định tuyến request
+• Auth Service - xử lý đăng ký, đăng nhập, tạo JWT token (mã thông báo)
+• Product Service - quản lý sản phẩm
+• Order Service - tạo và quản lý đơn hàng
+
+---------------------------------------------------
+3. MẪU THIẾT KẾ:
+---------------------------------------------------
+• Microservices Pattern - chia nhỏ service độc lập
+• API Gateway Pattern - một điểm vào cho toàn hệ thống
+• Repository & Service Pattern (Tách biệt tầng dữ liệu và nghiệp vụ) - tách biệt logic rõ ràng, dễ bảo trì
+• Event-Driven - các dịch vụ giao tiếp bất đồng bộ qua RabbitMQ
+
+---------------------------------------------------
+4. CÁCH GIAO TIẾP:
+---------------------------------------------------
+• Đồng bộ: Client gọi qua API Gateway bằng HTTP/REST, middleware check JWT
+• Bất đồng bộ: Services trao đổi events qua RabbitMQ message queue
+• Docker Network: Tất cả chạy trong containers, giao tiếp qua internal network
+
+---------------------------------------------------
+KẾT LUẬN:
+---------------------------------------------------
+"Dùng Docker Compose để đóng gói và chạy toàn bộ hệ thống, mỗi service có MongoDB riêng 
+theo database-per-service pattern để đảm bảo độc lập."
+
+
