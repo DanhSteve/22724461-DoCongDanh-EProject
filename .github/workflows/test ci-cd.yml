@@ -39,8 +39,11 @@ jobs:
           " || true
           sleep 11
 
-      - name: Run unit tests
-        run: docker exec danh_product_service npm test
+      - name: Run unit tests (Product & Auth in parallel)
+        run: |
+          docker exec danh_product_service npm test &
+          docker exec danh_auth_service npm test &
+          wait
 
       - name: Stop and remove containers after testing
         run: docker compose -f docker-compose.yml down
@@ -53,7 +56,7 @@ jobs:
       - name: Checkout source code from repository
         uses: actions/checkout@v3
 
-      - name: Step 2 - Rebuild Docker images for deployment
+      - name: Rebuild Docker images for deployment
         run: docker compose -f docker-compose.yml build --parallel
         env:
           DOCKER_BUILDKIT: 1

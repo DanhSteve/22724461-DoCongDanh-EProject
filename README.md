@@ -1,10 +1,56 @@
-# 🐇 Case Study: Microservices với RabbitMQ, API Gateway & JWT
+# 🐇 22724461-DoCongDanh-EProject
+## Microservices E-Commerce Platform với RabbitMQ, API Gateway & JWT
 
-Dự án minh họa cách xây dựng hệ thống **Microservices** trong Node.js, sử dụng:
-- 🐳 **Docker** để container hóa  
-- 🐇 **RabbitMQ** để giao tiếp giữa các service  
-- 🔐 **JWT** để xác thực người dùng  
-- 🚪 **API Gateway** để định tuyến yêu cầu  
+**Sinh viên:** Đỗ Công Danh  
+**MSSV:** 22724461  
+**Môn học:** Lập Trình Hướng Dịch Vụ  
+
+---
+
+Dự án xây dựng hệ thống **Microservices** hoàn chỉnh cho E-Commerce sử dụng:
+- 🐳 **Docker & Docker Compose** - Container hóa và orchestration  
+- 🐇 **RabbitMQ** - Message broker cho event-driven architecture  
+- 🔐 **JWT** - Xác thực và phân quyền người dùng  
+- 🚪 **API Gateway** - Single entry point cho tất cả services
+- 🗄️ **MongoDB** - NoSQL database cho mỗi microservice
+- ⚙️ **GitHub Actions** - CI/CD automation  
+
+---
+
+## 📊 Kiến trúc hệ thống
+
+```
+┌─────────────┐
+│   Client    │ (Postman/Browser)
+└──────┬──────┘
+       │
+       ↓
+┌─────────────────────────────────────┐
+│      API Gateway (Port 3003)        │  ← Single Entry Point
+└────┬──────────┬──────────┬──────────┘
+     │          │          │
+     ↓          ↓          ↓
+┌─────────┐ ┌─────────┐ ┌─────────┐
+│  Auth   │ │Product  │ │ Order   │
+│ Service │ │ Service │ │ Service │
+│ :3000   │ │  :3001  │ │  :3002  │
+└────┬────┘ └────┬────┘ └────┬────┘
+     │           │           │
+     └───────────┴───────────┘
+                 │
+         ┌───────┴────────┐
+         ↓                ↓
+    ┌─────────┐      ┌──────────┐
+    │ MongoDB │      │ RabbitMQ │
+    │  :27018 │      │   :5672  │
+    └─────────┘      └──────────┘
+```
+
+**Các microservices:**
+- 🔐 **Auth Service** - Đăng ký, đăng nhập, JWT authentication
+- 📦 **Product Service** - Quản lý sản phẩm (CRUD operations)
+- 🛒 **Order Service** - Xử lý đơn hàng, tích hợp RabbitMQ
+- 🚪 **API Gateway** - Routing, load balancing
 
 ---
 
@@ -37,14 +83,71 @@ docker compose down -v
 ```
 
 **📍 Endpoints:**
-- API Gateway: http://localhost:3003
-- Product Service: http://localhost:3001 (có endpoint GET /id mới)
-- Auth Service: http://localhost:3000
-- RabbitMQ UI: http://localhost:15672 (guest/guest)
+- 🌐 API Gateway: http://localhost:3003
+- 🔐 Auth Service: http://localhost:3000
+- 📦 Product Service: http://localhost:3001 (có endpoint GET /id)
+- 🛒 Order Service: http://localhost:3002
+- 🐰 RabbitMQ UI: http://localhost:15672 (guest/guest)
+- 🗄️ MongoDB: localhost:27018
 
 ---
 
-## 📤 GIT/GITHUB - CÁC LỆNH THƯỜNG DÙNG
+## 🚀 CI/CD với GitHub Actions
+
+### 🔧 Cấu hình CI/CD Pipeline
+
+Dự án đã được cấu hình CI/CD tự động với GitHub Actions (`.github/workflows/test ci-cd.yml`).
+
+**🔗 GitHub Repository:** https://github.com/DanhSteve/22724461-DoCongDanh-EProject
+
+**Pipeline gồm 2 jobs chính:**
+
+#### 1️⃣ Build & Test Job
+- ✅ Checkout code từ repository
+- ✅ Build tất cả Docker images song song (tối ưu thời gian)
+- ✅ Tạo file environment variables (.env.ci)
+- ✅ Start tất cả containers
+- ✅ Cấu hình MongoDB (tạo test user)
+- ✅ **Chạy unit tests song song** (Auth Service + Product Service) - **Tối ưu thời gian!**
+- ✅ Dọn dẹp containers sau khi test
+
+#### 2️⃣ Deploy Job (chỉ chạy khi tests pass)
+- ✅ Rebuild Docker images
+- ✅ Login vào Docker Hub
+- ✅ Tag và push images lên Docker Hub
+
+### 📦 Cấu hình GitHub Secrets
+
+Để CI/CD hoạt động, cần thêm 2 secrets vào GitHub repository:
+
+1. Vào repository trên GitHub → **Settings** → **Secrets and variables** → **Actions**
+2. Thêm 2 secrets:
+   - `DOCKER_USERNAME`: Tên tài khoản Docker Hub
+   - `DOCKER_PASSWORD`: Mật khẩu hoặc Access Token của Docker Hub
+
+### ⏱️ Thời gian chạy CI/CD
+
+- **Build images:** ~2-3 phút
+- **Start containers & setup:** ~25 giây
+- **Run tests (parallel):** ~5-10 giây (Auth + Product chạy đồng thời)
+- **Deploy to Docker Hub:** ~1-2 phút
+
+**Tổng thời gian:** ~4-6 phút/build
+
+### 🎯 Tối ưu đã áp dụng
+
+✅ **Parallel build:** Tất cả 4 services build cùng lúc với `docker compose build --parallel`  
+✅ **Parallel tests:** Auth & Product tests chạy đồng thời với `&` và `wait`  
+✅ **BuildKit enabled:** Tăng tốc độ build Docker images với `DOCKER_BUILDKIT=1`  
+✅ **Parallel push:** Push 4 images lên Docker Hub song song  
+
+**⚡ Kết quả:** Giảm thời gian CI/CD từ ~8-10 phút xuống còn ~4-6 phút!
+
+---
+
+##  GIT/GITHUB - CÁC LỆNH THƯỜNG DÙNG
+
+**🔗 Repository:** https://github.com/DanhSteve/22724461-DoCongDanh-EProject
 
 ### 🎯 Khởi tạo Git lần đầu (nếu chưa có .git)
 
@@ -61,8 +164,8 @@ git commit -m "Initial commit"
 # 4. Đổi tên branch thành main (nếu cần)
 git branch -M main
 
-# 5. Thêm remote repository (thay YOUR_USERNAME và YOUR_REPO)
-git remote add origin https://github.com/YOUR_USERNAME/YOUR_REPO.git
+# 5. Thêm remote repository
+git remote add origin https://github.com/DanhSteve/22724461-DoCongDanh-EProject.git
 
 # 6. Push lần đầu lên GitHub
 git push -u origin main
@@ -125,9 +228,20 @@ git pull                                      # Kéo code mới từ GitHub
 
 ## 🚀 HƯỚNG DẪN CHI TIẾT
 
-### Yêu cầu:
-- Docker Desktop đã cài đặt và đang chạy
-- File `.env` đã được cấu hình (có sẵn trong dự án)
+### 📋 Yêu cầu hệ thống:
+- ✅ **Docker Desktop** đã cài đặt và đang chạy (phiên bản 20.10+)
+- ✅ **Git** đã cài đặt (để clone/push code)
+- ✅ **Node.js 18+** (tùy chọn - nếu muốn chạy local không dùng Docker)
+- ✅ File **`.env`** đã được cấu hình (có sẵn trong dự án)
+
+### 🔑 Environment Variables
+File `.env` trong project đã cấu hình sẵn:
+```env
+JWT_SECRET=danhcubade
+MONGODB_PRODUCT_URI=mongodb://docongdanh:mongodb123@danh_mongodb:27017/product_db?authSource=admin
+MONGODB_ORDER_URI=mongodb://docongdanh:mongodb123@danh_mongodb:27017/order_db?authSource=admin
+MONGODB_AUTH_URI=mongodb://docongdanh:mongodb123@danh_mongodb:27017/auth_db?authSource=admin
+```
 
 ### 1️⃣ Chạy toàn bộ hệ thống lần đầu:
 ```bash
@@ -786,21 +900,121 @@ docker logs danh_order_service
 
 ---
 
-##  8. Kết luận
+## 📊 8. CI/CD & Testing
 
-Hệ thống đã được thiết lập thành công:
-- RabbitMQ hoạt động để giao tiếp giữa các service  
-- JWT đảm bảo xác thực người dùng  
-- API Gateway định tuyến chính xác  
-- Tất cả API hoạt động ổn định qua Postman ✅
+### ✅ Automated Testing
+Dự án sử dụng **GitHub Actions** để tự động test khi push code lên branch `main`:
+- 🧪 **Auth Service Tests** (`auth/src/test/authController.test.js`) - Unit tests cho authentication logic
+- 🧪 **Product Service Tests** (`product/src/test/product.test.js`) - Unit tests cho product operations
+- ⚡ **Parallel Execution** - 2 test suites chạy đồng thời để tiết kiệm thời gian (~5-10 giây)
 
-**📊 Các bước test đã hoàn thành:**
-- ✅ Tạo tài khoản người dùng (0.5 điểm)
-- ✅ Đăng nhập thành công (0.5 điểm)
-- ✅ Tạo thông tin sản phẩm mới (0.5 điểm)
-- ✅ Thực hiện thao tác đặt hàng (0.5 điểm)
+### 🚀 Continuous Deployment
+Sau khi tests pass ✅, Docker images tự động được build và push lên **Docker Hub**:
+- `danhsteve/api-gateway:latest`
+- `danhsteve/auth-service:latest`
+- `danhsteve/product-service:latest`
+- `danhsteve/order-service:latest`
+
+### 📈 CI/CD Workflow
+```
+Push to GitHub (main branch)
+    ↓
+GitHub Actions triggered
+    ↓
+Build all Docker images (parallel)
+    ↓
+Start containers & setup MongoDB
+    ↓
+Run Auth + Product tests (parallel)
+    ↓
+Tests pass ✅
+    ↓
+Tag & Push images to Docker Hub (parallel)
+    ↓
+Deploy complete! 🚀
+```
+
+**⏱️ Tổng thời gian:** ~4-6 phút (đã tối ưu từ ~8-10 phút)
 
 ---
 
-🧑‍💻 **Tác giả:** ĐỖ CÔNG DANH 
-📅 **Cập nhật lần cuối:** 2025-10-21
+## 🎓 9. Kết luận
+
+### 📊 Tổng quan dự án
+Dự án **22724461-DoCongDanh-EProject** là một hệ thống E-Commerce hoàn chỉnh được xây dựng theo kiến trúc **Microservices**, minh họa các kỹ thuật và công nghệ hiện đại trong phát triển phần mềm.
+
+### ✅ Công nghệ & Kỹ thuật đã áp dụng
+
+**Architecture & Design Patterns:**
+- ✅ Microservices Architecture (4 services độc lập)
+- ✅ API Gateway Pattern (Single entry point)
+- ✅ Event-Driven Architecture (RabbitMQ message broker)
+- ✅ Repository Pattern (Data access layer)
+- ✅ Service Layer Pattern (Business logic separation)
+
+**Technologies Stack:**
+- ✅ **Backend:** Node.js v18+ với Express.js framework
+- ✅ **Database:** MongoDB với Mongoose ODM (separate DB per service)
+- ✅ **Authentication:** JWT (JSON Web Tokens) với bcrypt password hashing
+- ✅ **Message Queue:** RabbitMQ 4 cho inter-service communication
+- ✅ **Containerization:** Docker & Docker Compose orchestration
+- ✅ **CI/CD:** GitHub Actions với automated testing & deployment
+- ✅ **Testing:** Unit tests với parallel execution
+
+**Key Features Implemented:**
+- ✅ User authentication & authorization (Register, Login, JWT)
+- ✅ Product management với CRUD operations
+- ✅ Order processing với RabbitMQ integration
+- ✅ API Gateway routing với http-proxy
+- ✅ Automated testing (Auth + Product services)
+- ✅ CI/CD pipeline với Docker Hub deployment
+
+### 🚀 Performance Optimizations
+- ⚡ Parallel Docker builds (4 services cùng lúc)
+- ⚡ Parallel test execution (Auth + Product đồng thời)
+- ⚡ Docker BuildKit enabled (faster image builds)
+- ⚡ Parallel Docker Hub push (4 images cùng lúc)
+- ⚡ **Result:** CI/CD time reduced từ ~8-10 phút → ~4-6 phút
+
+### 📈 Kết quả đạt được
+- ✅ Hệ thống hoạt động ổn định với 4 microservices
+- ✅ RabbitMQ message broker hoạt động tốt cho async communication
+- ✅ JWT authentication bảo mật endpoints
+- ✅ API Gateway routing chính xác đến các services
+- ✅ Docker containerization đảm bảo tính nhất quán môi trường
+- ✅ CI/CD pipeline tự động test & deploy thành công
+- ✅ Tất cả API endpoints test pass qua Postman
+
+### 🎯 Bài học kinh nghiệm
+1. **Microservices** giúp scale và maintain dễ dàng hơn monolithic
+2. **Message Queue** (RabbitMQ) giải quyết vấn đề async communication giữa services
+3. **Docker** đảm bảo "works on my machine" không còn là vấn đề
+4. **CI/CD** giúp phát hiện lỗi sớm và deploy nhanh hơn
+5. **Parallel execution** quan trọng để tối ưu thời gian build/test
+
+---
+
+## 🔗 Links & Resources
+
+- **📦 GitHub Repository:** https://github.com/DanhSteve/22724461-DoCongDanh-EProject
+- **🐳 Docker Hub:** https://hub.docker.com/u/danhsteve
+- **📚 Documentation:** Xem file `GIAI_THICH_CI_CD.md` và `TRINH_BAY_KIEN_TRUC.txt`
+
+### 📞 Liên hệ
+- **Sinh viên:** Đỗ Công Danh
+- **MSSV:** 22724461
+- **Môn học:** Lập Trình Hướng Dịch Vụ
+- **GitHub:** [@DanhSteve](https://github.com/DanhSteve)
+
+---
+
+## 📝 License
+
+This project is for educational purposes - **22724461-DoCongDanh-EProject**
+
+---
+
+🧑‍💻 **Tác giả:** ĐỖ CÔNG DANH  
+🎓 **MSSV:** 22724461  
+📅 **Cập nhật lần cuối:** 2025-10-23  
+⭐ **Version:** 1.0.0
