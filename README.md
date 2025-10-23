@@ -319,8 +319,8 @@ Product Service → RabbitMQ Queue → Order Service
 ├── POSTMAN_TESTING.md        # 📮 API testing guide (9 steps E2E)
 ├── DOCKER_GUIDE.md           # 🐳 Docker commands & troubleshooting
 ├── GIT_WORKFLOW.md           # 🔀 Git workflow & conventions
-├── GIAI_THICH_CI_CD.md       # ⚙️ CI/CD pipeline explanation
-└── TRINH_BAY_KIEN_TRUC.txt   # 🏗️ Architecture presentation
+├── TRINH_BAY_KIEN_TRUC.txt   # 🏗️ Architecture presentation
+
 ```
 
 **Key Files:**
