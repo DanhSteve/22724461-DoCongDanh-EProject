@@ -20,6 +20,15 @@
 
 ---
 
+### Lệnh push lên github
+```bash
+git add .
+
+git commit -m " "
+
+git push
+```
+
 ## 📋 BƯỚC 1: Đăng ký tài khoản (Register)
 
 ```http
