@@ -86,6 +86,10 @@ async getProductById(req, res){
   const rs  = await this.productService.getProductById(id);
   return res.status(200).json(rs);
 }
-
+async getProductById(req, res){
+  const id = req.params.id;
+  const rs = await this.productService.getProductById(id);
+  return res.status(200).json(rs);
+}
 }
 module.exports = ProductController;
