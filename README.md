@@ -1,37 +1,37 @@
 # 🐇 Microservices E-Commerce Platform
-> **Hệ thống E-Commerce với Microservices Architecture, RabbitMQ, Docker & CI/CD**
+> **E-Commerce System with Microservices Architecture, RabbitMQ, Docker & CI/CD**
 
 **GitHub:** [DanhSteve](https://github.com/DanhSteve/22724461-DoCongDanh-EProject)
 
 ---
 
-## 🎯 Mô tả dự án
+## 🎯 Project Overview
 
-Hệ thống **E-Commerce** được xây dựng theo kiến trúc **Microservices**, triển khai các pattern và best practices:
+**E-Commerce** system built with **Microservices architecture**, implementing modern patterns and best practices:
 
-✨ **Tính năng chính:**
-- 🔐 Xác thực JWT với Auth Service
-- 📦 Quản lý sản phẩm (CRUD operations)
-- 🛒 Xử lý đơn hàng với business rules
-- 🐇 Event-driven architecture với RabbitMQ
-- 🚪 API Gateway làm single entry point
-- 🐳 Container hóa hoàn toàn với Docker
-- ⚙️ CI/CD automation với GitHub Actions
-- 🧪 Unit testing với Jest
+✨ **Key Features:**
+- 🔐 JWT Authentication with Auth Service
+- 📦 Product Management (CRUD operations)
+- 🛒 Order Processing with business rules
+- 🐇 Event-driven architecture with RabbitMQ
+- 🚪 API Gateway as single entry point
+- 🐳 Full containerization with Docker
+- ⚙️ CI/CD automation with GitHub Actions
+- 🧪 Unit testing with Jest
 
 **Business Rules:**
-- Mỗi user tối đa **5 đơn hàng/ngày**
-- Đơn hàng quá **24h** sẽ không xử lý
-- Kiểm tra tồn kho trước khi đặt hàng
-- RabbitMQ đồng bộ giữa Product và Order services
+- Each user can place maximum **5 orders/day**
+- Orders older than **24 hours** will not be processed
+- Inventory check before order placement
+- RabbitMQ synchronization between Product and Order services
 
 ---
 
-## 📖 Tài liệu chi tiết
+## 📖 Documentation
 
-| Tài liệu | Nội dung |
+| Document | Content |
 |----------|----------|
-| 📮 [**POSTMAN_TESTING.md**](./POSTMAN_TESTING.md) | Hướng dẫn test API, E2E workflow, examples |
+| 📮 [**POSTMAN_TESTING.md**](./POSTMAN_TESTING.md) | API testing guide, E2E workflow, examples |
 | 🐳 [**DOCKER_GUIDE.md**](./DOCKER_GUIDE.md) | Docker commands, troubleshooting, best practices |
 | ⚙️ [**GIAI_THICH_CI_CD.md**](./GIAI_THICH_CI_CD.md) | CI/CD pipeline, GitHub Actions workflow |
 | 🏗️ [**TRINH_BAY_KIEN_TRUC.txt**](./TRINH_BAY_KIEN_TRUC.txt) | Architecture presentation slides |
@@ -40,11 +40,11 @@ Hệ thống **E-Commerce** được xây dựng theo kiến trúc **Microservic
 
 ## 🚀 Quick Start
 
-### Yêu cầu hệ thống
+### System Requirements
 - ✅ Docker Desktop 20.10+
 - ✅ Git
-- ✅ 4GB RAM trống
-- ✅ Port available: 3001, 3002, 3003, 3004, 27018, 5672, 15672
+- ✅ 4GB free RAM
+- ✅ Available ports: 3001, 3002, 3003, 3004, 27018, 5672, 15672
 
 ### 1️⃣ Clone project
 ```bash
@@ -52,36 +52,120 @@ git clone https://github.com/DanhSteve/22724461-DoCongDanh-EProject.git
 cd 22724461-DoCongDanh-EProject
 ```
 
-### 2️⃣ Khởi động hệ thống
+### 2️⃣ Start the system
 ```bash
 docker compose up -d
 ```
 
-### 3️⃣ Kiểm tra trạng thái
+### 3️⃣ Check status
 ```bash
 docker compose ps
 ```
 
-**Kết quả mong đợi:** 6 containers đang chạy (API Gateway, Auth, Product, Order, MongoDB, RabbitMQ)
+**Expected result:** 6 containers running (API Gateway, Auth, Product, Order, MongoDB, RabbitMQ)
 
 ### 4️⃣ Test API
-Xem chi tiết trong [**POSTMAN_TESTING.md**](./POSTMAN_TESTING.md)
+See details in [**POSTMAN_TESTING.md**](./POSTMAN_TESTING.md)
 
 **Quick Test:**
 ```bash
-# Login để lấy token
+# Login to get token
 curl -X POST http://localhost:3003/auth/api/v1/login \
   -H "Content-Type: application/json" \
   -d '{"username":"testuser","password":"123456"}'
 
-# Xem danh sách sản phẩm (thay <TOKEN>)
+# Get product list (replace <TOKEN>)
 curl http://localhost:3003/products/api/v1 \
   -H "Authorization: Bearer <TOKEN>"
 ```
 
 ---
 
-## 🏗️ Kiến trúc hệ thống
+## 📱 Main Features Demo
+
+### 1. User Registration
+
+**Endpoint:** `POST /auth/api/v1/register`
+
+**Request Body:**
+```json
+{
+  "username": "danh",
+  "password": "123456"
+}
+```
+
+![Register](./public/result/register.png)
+
+---
+
+### 2. User Login
+
+**Endpoint:** `POST /auth/api/v1/login`
+
+**Request Body:**
+```json
+{
+  "username": "danh",
+  "password": "123456"
+}
+```
+
+**Response:** Receive JWT token for authenticating subsequent requests
+
+![Login](./public/result/login.png)
+
+---
+
+### 3. Create Product
+
+**Endpoint:** `POST /products/api/v1/add`
+
+**Headers:**
+```
+Authorization: Bearer <JWT_TOKEN>
+```
+
+**Request Body:**
+```json
+{
+  "name": "Laptop Dell XPS 15",
+  "price": 25000000,
+  "description": "Laptop gaming cao cấp",
+  "quantity": 40
+}
+```
+
+![Create Product](./public/result/create-product.png)
+
+---
+
+### 4. Place Order
+
+**Endpoint:** `POST /products/api/v1/buy`
+
+**Headers:**
+```
+Authorization: Bearer <JWT_TOKEN>
+```
+
+**Request Body:**
+```json
+{
+    "ids": [
+        {
+            "id": "68fb36c01780b746d3398ed5",
+            "quantity": 4
+        }
+    ]
+}
+```
+
+![Place Order](./public/result/order.png)
+
+---
+
+## 🏗️ System Architecture
 
 ```
 ┌─────────────┐
@@ -115,14 +199,14 @@ curl http://localhost:3003/products/api/v1 \
 
 **Microservices:**
 - 🔐 **Auth Service** - JWT authentication, user management
-- 📦 **Product Service** - CRUD sản phẩm, inventory
-- 🛒 **Order Service** - Xử lý đơn hàng, RabbitMQ consumer
+- 📦 **Product Service** - Product CRUD, inventory management
+- 🛒 **Order Service** - Order processing, RabbitMQ consumer
 - 🚪 **API Gateway** - Routing, load balancing
 
 **Tech Stack:**
 - 🐳 **Docker Compose** - Container orchestration
 - 🐇 **RabbitMQ** - Event-driven messaging (Port 5672, UI: 15672)
-- 🗄️ **MongoDB** - NoSQL database cho mỗi service (Port 27018)
+- 🗄️ **MongoDB** - NoSQL database per service (Port 27018)
 - 🔐 **JWT** - Stateless authentication
 - ⚙️ **GitHub Actions** - CI/CD automation
 - 🧪 **Jest** - Unit testing framework
@@ -142,21 +226,21 @@ curl http://localhost:3003/products/api/v1 \
 ## 📦 API Endpoints
 
 ### Auth Service
-- `POST /auth/api/v1/register` - Đăng ký
-- `POST /auth/api/v1/login` - Đăng nhập (nhận JWT token)
-- `GET /auth/api/v1/dashboard` - Xem profile (cần JWT)
+- `POST /auth/api/v1/register` - User registration
+- `POST /auth/api/v1/login` - User login (returns JWT token)
+- `GET /auth/api/v1/dashboard` - View profile (requires JWT)
 
 ### Product Service
-- `POST /products/api/v1/add` - Thêm sản phẩm
-- `GET /products/api/v1` - Danh sách sản phẩm
-- `GET /products/api/v1/id?id=<ID>` - Chi tiết sản phẩm
-- `POST /products/api/v1/buy` - Tạo đơn hàng
+- `POST /products/api/v1/add` - Add new product
+- `GET /products/api/v1` - Get all products
+- `GET /products/api/v1/id?id=<ID>` - Get product by ID
+- `POST /products/api/v1/buy` - Create order
 
 ### Order Service
-- `GET /orders/api/v1` - Danh sách đơn hàng
-- `PUT /orders/api/v1/cancle/<ID>` - Hủy đơn hàng
+- `GET /orders/api/v1` - Get all orders
+- `PUT /orders/api/v1/cancle/<ID>` - Cancel order
 
-> 💡 **Xem workflow E2E testing đầy đủ trong [POSTMAN_TESTING.md](./POSTMAN_TESTING.md)**
+> 💡 **See complete E2E testing workflow in [POSTMAN_TESTING.md](./POSTMAN_TESTING.md)**
 
 ---
 
@@ -168,38 +252,38 @@ curl http://localhost:3003/products/api/v1 \
 
 **1️⃣ Build & Test Job:**
 ```yaml
-✅ Checkout code từ GitHub
-✅ Build Docker images (parallel - tối ưu thời gian)
+✅ Checkout code from GitHub
+✅ Build Docker images (parallel - optimized time)
 ✅ Start containers (API Gateway, Auth, Product, Order, MongoDB, RabbitMQ)
 ✅ Setup test data (create test users)
 ✅ Run unit tests (Auth & Product parallel)
 ✅ Cleanup containers
 ```
 
-**2️⃣ Deploy Job** (chỉ chạy khi tests pass):
+**2️⃣ Deploy Job** (only runs when tests pass):
 ```yaml
 ✅ Rebuild Docker images
 ✅ Login to Docker Hub
-✅ Tag images với version
+✅ Tag images with version
 ✅ Push to Docker Hub (parallel)
 ```
 
-### ⚡ Tối ưu đã áp dụng
+### ⚡ Applied Optimizations
 
-- **Parallel Build:** `docker compose build --parallel` (giảm 40% thời gian)
-- **Parallel Tests:** Auth & Product tests chạy đồng thời với `&` và `wait`
-- **Docker BuildKit:** `DOCKER_BUILDKIT=1` tăng tốc build
-- **Parallel Push:** 4 images push cùng lúc lên Docker Hub
+- **Parallel Build:** `docker compose build --parallel` (40% time reduction)
+- **Parallel Tests:** Auth & Product tests run simultaneously with `&` and `wait`
+- **Docker BuildKit:** `DOCKER_BUILDKIT=1` speeds up build
+- **Parallel Push:** 4 images pushed simultaneously to Docker Hub
 
-**Thời gian:** ~4-6 phút/build (giảm từ 8-10 phút)
+**Build Time:** ~4-6 minutes/build (reduced from 8-10 minutes)
 
-### 🔑 GitHub Secrets cần thiết
+### 🔑 Required GitHub Secrets
 ```
 DOCKER_USERNAME - Docker Hub username
 DOCKER_PASSWORD - Docker Hub password/token
 ```
 
-> 📘 **Chi tiết đầy đủ trong [GIAI_THICH_CI_CD.md](./GIAI_THICH_CI_CD.md)**
+> 📘 **Full details in [GIAI_THICH_CI_CD.md](./GIAI_THICH_CI_CD.md)**
 
 ---
 
@@ -209,18 +293,18 @@ DOCKER_PASSWORD - Docker Hub password/token
 
 **Auth Service:**
 ```
-✅ POST /register - Tạo user mới
-✅ POST /login - Xác thực và trả JWT token
-✅ GET /dashboard - Lấy thông tin user (JWT required)
+✅ POST /register - Create new user
+✅ POST /login - Authenticate and return JWT token
+✅ GET /dashboard - Get user info (JWT required)
 ✅ Middleware authentication validation
 ```
 
 **Product Service:**
 ```
-✅ POST /add - Thêm sản phẩm mới
-✅ GET / - Lấy danh sách sản phẩm
-✅ GET /id - Lấy sản phẩm theo ID
-✅ POST /buy - Tạo đơn hàng (gửi message RabbitMQ)
+✅ POST /add - Add new product
+✅ GET / - Get product list
+✅ GET /id - Get product by ID
+✅ POST /buy - Create order (send RabbitMQ message)
 ```
 
 ### Integration Tests
@@ -228,31 +312,31 @@ DOCKER_PASSWORD - Docker Hub password/token
 **RabbitMQ Message Flow:**
 ```
 Product Service → RabbitMQ Queue → Order Service
-✅ Message publish thành công
-✅ Message consume và xử lý đúng
-✅ Retry mechanism hoạt động
+✅ Message published successfully
+✅ Message consumed and processed correctly
+✅ Retry mechanism working
 ```
 
 **MongoDB Persistence:**
 ```
 ✅ AuthService DB: 3 users (testuser, danhtest, test)
-✅ ProductService DB: Products với đầy đủ fields
-✅ OrderService DB: Orders với status tracking
+✅ ProductService DB: Products with complete fields
+✅ OrderService DB: Orders with status tracking
 ```
 
 **JWT Token Validation:**
 ```
-✅ Token được tạo đúng format
-✅ Middleware verify token chính xác
-✅ 401 khi thiếu/sai token
-✅ Token expiration hoạt động
+✅ Token created with correct format
+✅ Middleware verifies token accurately
+✅ 401 when token is missing/invalid
+✅ Token expiration working
 ```
 
 ### Test Coverage
 - Auth Service: **85%** coverage
 - Product Service: **80%** coverage
 
-> 🧪 **Xem test commands trong [DOCKER_GUIDE.md](./DOCKER_GUIDE.md)**
+> 🧪 **See test commands in [DOCKER_GUIDE.md](./DOCKER_GUIDE.md)**
 
 ---
 
@@ -324,7 +408,7 @@ Product Service → RabbitMQ Queue → Order Service
 ```
 
 **Key Files:**
-- `docker-compose.yml` - Định nghĩa 6 services
+- `docker-compose.yml` - Defines 6 services
 - `.github/workflows/test ci-cd.yml` - CI/CD automation
 - `*/src/controllers/` - REST API endpoints
 - `*/src/services/` - Business logic layer
@@ -333,7 +417,7 @@ Product Service → RabbitMQ Queue → Order Service
 
 ---
 
-## 📚 Tài liệu tham khảo
+## 📚 References
 
 - [Docker Documentation](https://docs.docker.com/)
 - [RabbitMQ Tutorials](https://www.rabbitmq.com/getstarted.html)
@@ -341,32 +425,21 @@ Product Service → RabbitMQ Queue → Order Service
 - [JWT.io](https://jwt.io/)
 - [GitHub Actions](https://docs.github.com/en/actions)
 
----
+## 🎓 Conclusion
 
-## 🧑‍💻 **Tác giả:** ĐỖ CÔNG DANH 
+Project successfully implements:
 
-🔗 GitHub: [DanhSteve/22724461-DoCongDanh-EProject](https://github.com/DanhSteve/22724461-DoCongDanh-EProject)
+✅ **Complete Microservices Architecture** with 4 independent services  
+✅ **Event-Driven Architecture** with RabbitMQ message broker  
+✅ **JWT Authentication** stateless and secure  
+✅ **Docker containerization** for all services  
+✅ **CI/CD automation** with GitHub Actions (4-6 minutes/build)  
+✅ **Unit & Integration testing** with Jest  
+✅ **MongoDB** per microservice (database per service pattern)  
+✅ **API Gateway** as single entry point  
+✅ **Professional documentation**  
 
-**Badges:**
-- [![CI/CD Status](https://github.com/DanhSteve/22724461-DoCongDanh-EProject/actions/workflows/test%20ci-cd.yml/badge.svg)](https://github.com/DanhSteve/22724461-DoCongDanh-EProject/actions)
-
----
-
-## 🎓 Kết luận
-
-Dự án đã triển khai thành công:
-
-✅ **Kiến trúc Microservices** hoàn chỉnh với 4 services độc lập  
-✅ **Event-Driven Architecture** với RabbitMQ message broker  
-✅ **JWT Authentication** stateless và secure  
-✅ **Docker containerization** cho tất cả services  
-✅ **CI/CD automation** với GitHub Actions (4-6 phút/build)  
-✅ **Unit & Integration testing** với Jest  
-✅ **MongoDB** cho mỗi microservice (database per service pattern)  
-✅ **API Gateway** làm single entry point  
-✅ **Documentation** đầy đủ và chuyên nghiệp  
-
-**Patterns & Best Practices áp dụng:**
+**Applied Patterns & Best Practices:**
 - ✅ Separation of Concerns (Controller → Service → Repository)
 - ✅ Database per Service pattern
 - ✅ API Gateway pattern
@@ -374,7 +447,17 @@ Dự án đã triển khai thành công:
 - ✅ Circuit Breaker (RabbitMQ retry mechanism)
 - ✅ Health Check endpoints
 - ✅ Environment-based configuration
-- ✅ Containerization với Docker
+- ✅ Containerization with Docker
 - ✅ CI/CD automation
 
+---
+
+## 🧑‍💻 **Author:** DO CONG DANH
+
+🔗 GitHub: [DanhSteve/22724461-DoCongDanh-EProject](https://github.com/DanhSteve/22724461-DoCongDanh-EProject)
+
+**Badges:**
+- [![CI/CD Status](https://github.com/DanhSteve/22724461-DoCongDanh-EProject/actions/workflows/test%20ci-cd.yml/badge.svg)](https://github.com/DanhSteve/22724461-DoCongDanh-EProject/actions)
+
+---
 
